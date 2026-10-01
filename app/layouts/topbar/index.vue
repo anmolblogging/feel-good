@@ -48,6 +48,11 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 sm:gap-4">
+          <!-- Currency Toggle: visible on desktop (lg+), hidden on mobile header (kept inside dropdown menu) -->
+          <div class="hidden lg:flex items-center">
+            <CurrencyToggle />
+          </div>
+
           <!-- Book a Session CTA (desktop) -->
           <div class="md:flex items-center hidden">
             <NuxtLink to="/contact" class="group py-2.5 px-4.5 inline-flex items-center justify-center gap-5 rounded-lg bg-primary font-medium text-primary-ink transition-all">

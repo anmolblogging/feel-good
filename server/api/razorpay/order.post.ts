@@ -1,19 +1,17 @@
 import Razorpay from 'razorpay'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { isSessionId, SESSION_CATALOGUE } from '~~/shared/utils/sessionCatalogue'
+import { isSessionId, isCurrency, SESSION_CATALOGUE, type Currency } from '~~/shared/utils/sessionCatalogue'
 import { CalendarUnavailable, isGoogleConfigured, isSlotFree, isValidCandidateSlot } from '../../utils/googleCalendar'
 import { clean, isEmail } from '../../utils/mail'
 
 /**
  * Creates a Razorpay order for one session.
  *
- * The browser sends a session id, who is booking, and the slot they picked.
- * The price is looked up server side so nobody can pay ₹1 for a ₹1,799
- * session by editing the request. The slot is checked to be one we actually
- * offer for that session, and still free, before any money moves. Everything
- * is stored as order notes: the verify step reads the slot back from Razorpay,
- * never from the browser.
+ * The browser sends a session id, who is booking, the chosen slot, and currency (INR/USD).
+ * The price is looked up server side so nobody can alter the amount.
+ * For INR, amounts are charged in paise (100 paise = ₹1).
+ * For USD, amounts are charged in cents (100 cents = $1).
  */
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
@@ -26,6 +24,7 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<{
     sessionId?: unknown
+    currency?: unknown
     name?: unknown
     email?: unknown
     phone?: unknown
@@ -43,6 +42,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const session = SESSION_CATALOGUE[body.sessionId]
+  const currency: Currency = isCurrency(body?.currency) ? body.currency : 'INR'
+  const amountCharged = currency === 'USD'
+    ? session.amountUsd * 100 // cents
+    : session.amountInr * 100 // paise
 
   const name = clean(body.name, 120)
   const email = clean(body.email, 200)
@@ -90,12 +93,13 @@ export default defineEventHandler(async (event) => {
   let order
   try {
     order = await razorpay.orders.create({
-      amount: session.amountInr * 100, // paise
-      currency: 'INR',
+      amount: amountCharged,
+      currency,
       receipt: `${session.id}-${Date.now()}`.slice(0, 40),
       notes: {
         session: session.title,
         session_id: session.id,
+        currency,
         name,
         email,
         phone,
@@ -125,7 +129,14 @@ export default defineEventHandler(async (event) => {
     amount: order.amount,
     currency: order.currency,
     keyId,
-    session: { id: session.id, title: session.title, amountInr: session.amountInr },
+    session: {
+      id: session.id,
+      title: session.title,
+      amount: currency === 'USD' ? session.amountUsd : session.amountInr,
+      amountInr: session.amountInr,
+      amountUsd: session.amountUsd,
+      currency
+    },
     slot: { startIso: slotStart, endIso: slotEnd, date: slotDate, label: slotLabel }
   }
 })

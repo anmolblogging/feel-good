@@ -5,7 +5,7 @@
  * order) → open Checkout → POST /api/razorpay/verify (server checks the
  * signature). Only a verified payment resolves `payForSession`.
  */
-import type { SessionId } from '~~/shared/utils/sessionCatalogue'
+import type { Currency, SessionId } from '~~/shared/utils/sessionCatalogue'
 
 const CHECKOUT_JS = 'https://checkout.razorpay.com/v1/checkout.js'
 
@@ -57,6 +57,7 @@ export type PaymentCustomer = {
   slotEndIso?: string
   slotDate?: string
   slotLabel?: string
+  currency?: Currency
 }
 
 export type PaymentResult = {
@@ -81,7 +82,7 @@ type OrderResponse = {
   amount: number
   currency: string
   keyId: string
-  session: { id: SessionId, title: string, amountInr: number }
+  session: { id: SessionId, title: string, amount: number, currency: Currency }
 }
 
 /**

@@ -12,9 +12,7 @@ import { serviceTopics } from '~/data/serviceTopics'
  *
  * No pages, components or routes were deleted — only gated.
  */
-export const HIDDEN_PAGES: string[] = [
-  '/service-detail'   // also covers /service-detail/personal and /corporate
-]
+export const HIDDEN_PAGES: string[] = []
 
 /**
  * Pages that sit underneath a gated path but are open anyway.

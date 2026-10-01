@@ -36,7 +36,12 @@ export async function fulfilBooking(event: H3Event, orderId: string, paymentId: 
   const customerPhone = notes.phone || ''
   const customerNote = notes.note || ''
   const sessionTitle = notes.session || 'Feel-Good Listening Session'
-  const amountPaidInr = Number(order.amount) / 100
+  const rawCurrency = (order.currency || notes.currency || 'INR').toString().toUpperCase()
+  const isUsd = rawCurrency === 'USD'
+  const numericAmount = Number(order.amount) / 100
+  const formattedAmount = isUsd
+    ? `$${numericAmount.toLocaleString('en-US')} USD`
+    : `₹${numericAmount.toLocaleString('en-IN')}`
   const startIso = notes.slot_start || ''
   const endIso = notes.slot_end || ''
   const slotDate = notes.slot_date || ''
@@ -82,7 +87,12 @@ export async function fulfilBooking(event: H3Event, orderId: string, paymentId: 
         customerPhone,
         customerNote: [isGift ? `Gifted by ${customerName} (${customerEmail})` : '', planNote, customerNote].filter(Boolean).join(' | '),
         sessionTitle: planNote ? `${sessionTitle}, ${planNote}` : sessionTitle,
-        startIso, endIso, paymentId, amountInr: amountPaidInr, clash
+        startIso,
+        endIso,
+        paymentId,
+        amountInr: isUsd ? undefined : numericAmount,
+        amountPaidFormatted: formattedAmount,
+        clash
       })
     } catch (err) {
       console.error('[verify] Google Calendar creation failed:', err)
@@ -107,7 +117,7 @@ export async function fulfilBooking(event: H3Event, orderId: string, paymentId: 
       customerPhone,
       customerNote,
       sessionTitle,
-      amount: `₹${amountPaidInr.toLocaleString('en-IN')}`,
+      amount: formattedAmount,
       paymentId,
       orderId,
       startIso,

@@ -30,7 +30,8 @@ export type BookingEventData = {
   startIso: string
   endIso: string
   paymentId: string
-  amountInr: number
+  amountInr?: number
+  amountPaidFormatted?: string
   /** Set when the slot was taken between choosing it and paying. */
   clash?: boolean
 }
@@ -349,6 +350,7 @@ export async function createCalendarBooking(event: H3Event, data: BookingEventDa
   const { calendarId } = getGoogleCredentials(event)
 
   const eventTitle = `${data.clash ? '⚠ CLASH, RESCHEDULE: ' : ''}Listening Session: ${data.customerName} (${data.sessionTitle})`
+  const paidStr = data.amountPaidFormatted || (typeof data.amountInr === 'number' ? `₹${data.amountInr.toLocaleString('en-IN')}` : '')
   const eventDescription = [
     `The Feel Good Centre — 1:1 Virtual Listening Session`,
     ``,
@@ -356,7 +358,7 @@ export async function createCalendarBooking(event: H3Event, data: BookingEventDa
     `Phone: ${data.customerPhone}`,
     `Email: ${data.customerEmail}`,
     `Session: ${data.sessionTitle}`,
-    `Amount Paid: ₹${data.amountInr.toLocaleString('en-IN')}`,
+    paidStr ? `Amount Paid: ${paidStr}` : '',
     `Payment ID: ${data.paymentId}`,
     data.clash ? `⚠ This slot was taken while the client was paying. Please agree a new time with them.` : '',
     data.customerNote ? `Client Note: "${data.customerNote}"` : '',

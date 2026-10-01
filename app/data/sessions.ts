@@ -1,12 +1,16 @@
 import type { BookableService } from '~/types/booking'
+import { SESSION_CATALOGUE, type SessionId } from '~~/shared/utils/sessionCatalogue'
 
 export type ServiceType = BookableService & {
+  id: SessionId
   description: string
   imageAlt?: string
   link: string
   priceLabel?: string
   badge?: string
   durationMinutes: number
+  amountInr: number
+  amountUsd: number
 }
 
 /** The bookable sessions, shown on the home page and on every service page. */
@@ -17,6 +21,8 @@ export const serviceData: ServiceType[] = [
     duration: '30 min',
     durationMinutes: 30,
     price: '₹799',
+    amountInr: SESSION_CATALOGUE['first-conversation'].amountInr,
+    amountUsd: SESSION_CATALOGUE['first-conversation'].amountUsd,
     badge: 'Start here',
     image: '/images/service/session-first.jpg',
     imageAlt: 'A woman waving hello at the start of a video call',
@@ -29,6 +35,8 @@ export const serviceData: ServiceType[] = [
     duration: '50 min',
     durationMinutes: 50,
     price: '₹1,799',
+    amountInr: SESSION_CATALOGUE['listening-50'].amountInr,
+    amountUsd: SESSION_CATALOGUE['listening-50'].amountUsd,
     badge: 'Most booked',
     image: '/images/service/session-core.jpg',
     imageAlt: 'A woman talking openly from her sofa during a call',
@@ -41,6 +49,8 @@ export const serviceData: ServiceType[] = [
     duration: '75 min',
     durationMinutes: 75,
     price: '₹2,499',
+    amountInr: SESSION_CATALOGUE['deep-75'].amountInr,
+    amountUsd: SESSION_CATALOGUE['deep-75'].amountUsd,
     image: '/images/service/session-deep.jpg',
     imageAlt: 'A woman sitting quietly with her laptop, unhurried',
     description: 'For the heavier things that take a while to reach. No clock watching, no rushing.',
@@ -52,6 +62,8 @@ export const serviceData: ServiceType[] = [
     duration: '30 min',
     durationMinutes: 30,
     price: '₹1,000',
+    amountInr: SESSION_CATALOGUE['followup-30'].amountInr,
+    amountUsd: SESSION_CATALOGUE['followup-30'].amountUsd,
     image: '/images/other/cafe-conversation.jpg',
     imageAlt: 'Two people picking up a conversation again over coffee',
     description: 'A shorter check-back for when you have already spoken and just need to pick the thread up again.',
@@ -63,6 +75,8 @@ export const serviceData: ServiceType[] = [
     duration: '4 sessions / month',
     durationMinutes: 50,
     price: '₹6,000',
+    amountInr: SESSION_CATALOGUE['checkin-monthly'].amountInr,
+    amountUsd: SESSION_CATALOGUE['checkin-monthly'].amountUsd,
     priceLabel: '/ month',
     image: '/images/service/session-checkin.jpg',
     imageAlt: 'A woman laughing over a warm drink during a check in',
@@ -75,6 +89,8 @@ export const serviceData: ServiceType[] = [
     duration: '50 min',
     durationMinutes: 50,
     price: '₹1,799',
+    amountInr: SESSION_CATALOGUE['gift-50'].amountInr,
+    amountUsd: SESSION_CATALOGUE['gift-50'].amountUsd,
     image: '/images/service/session-gift.jpg',
     imageAlt: 'A woman smiling warmly into the camera',
     description: 'Because everyone deserves to be heard. Give someone an hour that is entirely theirs.',

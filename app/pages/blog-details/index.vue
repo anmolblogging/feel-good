@@ -1,12 +1,10 @@
 <template>
-    <BlogDetails />
-    <Blog />
+  <div class="py-20 text-center">
+    <p>Redirecting to blog...</p>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import Blog from './components/Blog.vue';
-import BlogDetails from './components/BlogDetails.vue';
-
-usePageTitle('Blog Details')
-
+await navigateTo('/blog', { redirectCode: 301 })
 </script>
+

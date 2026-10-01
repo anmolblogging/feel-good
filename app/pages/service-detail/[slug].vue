@@ -269,6 +269,8 @@ import SessionGrid from '~/components/SessionGrid.vue'
 import type { BookableService } from '~/types/booking'
 import { findTopic, IS_LIST, IS_NOT_LIST, STEPS } from '~/data/serviceTopics'
 
+import { useCurrency } from '~/composables/useCurrency'
+
 /*
  * One route renders every per problem landing page from `~/data/serviceTopics`
  * (CLIENT-NOTES section 5). The layout is the design signed off on the
@@ -284,16 +286,18 @@ const topic = computed(() => {
   return found
 })
 
+const { getPrice } = useCurrency()
+
 /* The session this page sells */
 const bookingOpen = ref(false)
-const bookingService: BookableService = {
+const bookingService = computed<BookableService>(() => ({
   id: 'listening-50',
   title: 'Feel-Good Listening Session',
   duration: '50 min',
   durationMinutes: 50,
-  price: '₹1,799',
+  price: getPrice('listening-50'),
   image: '/images/service/session-core.jpg'
-}
+}))
 
 // First question starts open, so the column reads as answers rather than
 // a list of closed headings. Reset when navigating between topics.

@@ -46,7 +46,7 @@ export default defineNuxtConfig({
 
   // Redirection rules
   routeRules: {
-    '/': { redirect: '/home' }
+    '/home': { redirect: { to: '/', statusCode: 301 } }
   },
 
   // App head settings

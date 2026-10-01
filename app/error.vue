@@ -65,5 +65,5 @@ usePageTitle('Page not found')
 
 // clearError resets the error state before navigating, so the app recovers
 // properly rather than leaving the boundary rendered.
-const goHome = () => clearError({ redirect: '/home' })
+const goHome = () => clearError({ redirect: '/' })
 </script>

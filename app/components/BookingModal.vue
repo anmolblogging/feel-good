@@ -31,35 +31,39 @@
               <div class="grid md:grid-cols-2 gap-5 lg:gap-7 items-start">
                 <!-- COLUMN 1: ALL SESSIONS (CARDS - NOT A DROPDOWN) -->
                 <div class="space-y-3">
-                  <!-- Category Switcher Pill -->
-                  <div class="flex items-center gap-1 p-1 rounded-xl bg-default-200/60 w-fit">
-                    <button
-                      type="button"
-                      @click="setCategory('individual')"
-                      :class="[
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-                        sessionCategory === 'individual'
-                          ? 'bg-white text-default-950 shadow-2xs'
-                          : 'text-default-600 hover:text-default-950'
-                      ]"
-                    >
-                      <Icon icon="tabler:user" class="size-3.5" />
-                      <span>For Individual</span>
-                    </button>
+                  <!-- Category Switcher Pill & Currency Switcher -->
+                  <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-1 p-1 rounded-xl bg-default-200/60 w-fit">
+                      <button
+                        type="button"
+                        @click="setCategory('individual')"
+                        :class="[
+                          'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                          sessionCategory === 'individual'
+                            ? 'bg-white text-default-950 shadow-2xs'
+                            : 'text-default-600 hover:text-default-950'
+                        ]"
+                      >
+                        <Icon icon="tabler:user" class="size-3.5" />
+                        <span>For Individual</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      @click="setCategory('gift')"
-                      :class="[
-                        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
-                        sessionCategory === 'gift'
-                          ? 'bg-white text-default-950 shadow-2xs'
-                          : 'text-default-600 hover:text-default-950'
-                      ]"
-                    >
-                      <Icon icon="tabler:gift" class="size-3.5 text-peach" />
-                      <span>Gift a Session</span>
-                    </button>
+                      <button
+                        type="button"
+                        @click="setCategory('gift')"
+                        :class="[
+                          'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                          sessionCategory === 'gift'
+                            ? 'bg-white text-default-950 shadow-2xs'
+                            : 'text-default-600 hover:text-default-950'
+                        ]"
+                      >
+                        <Icon icon="tabler:gift" class="size-3.5 text-peach" />
+                        <span>Gift a Session</span>
+                      </button>
+                    </div>
+
+                    <CurrencyToggle />
                   </div>
 
                   <div class="text-[0.68rem] font-bold tracking-wider uppercase text-default-500">
@@ -93,7 +97,7 @@
                           </span>
                         </div>
                         <div class="text-[0.7rem] text-default-500">
-                          {{ svc.duration }} &middot; 1 session
+                          {{ svc.id === 'checkin-monthly' ? svc.duration : `${svc.duration} &middot; 1 session` }}
                         </div>
                       </div>
 
@@ -104,7 +108,7 @@
                             activeServiceId === svc.id ? 'text-primary' : 'text-default-900'
                           ]"
                         >
-                          {{ svc.price }}
+                          {{ getPrice(svc.id) }}
                         </span>
                       </div>
                     </button>
@@ -168,7 +172,7 @@
                       <h4 class="font-heading text-sm font-semibold text-default-950">{{ activeService?.title }}</h4>
                       <span class="text-[0.72rem] text-default-500">{{ activeService?.duration }}</span>
                     </div>
-                    <span class="font-heading text-base font-bold text-primary">{{ activeService?.price }}</span>
+                    <span class="font-heading text-base font-bold text-primary">{{ activePriceFormatted }}</span>
                   </div>
 
                   <div class="space-y-2 text-xs">
@@ -326,7 +330,7 @@
                         <h4 class="font-heading text-sm font-semibold text-default-950">{{ activeService?.title }}</h4>
                         <p class="text-[0.72rem] text-default-500">1:1 Virtual Session with Kinjal Shah</p>
                       </div>
-                      <span class="font-heading text-base text-primary font-bold">{{ activeService?.price }}</span>
+                      <span class="font-heading text-base text-primary font-bold">{{ activePriceFormatted }}</span>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2.5 text-xs">
@@ -369,10 +373,13 @@
 
                 <div class="md:col-span-5 space-y-3">
                   <div class="rounded-2xl bg-white border border-default-200/90 p-4 space-y-3 shadow-xs">
-                    <div class="text-xs font-semibold text-default-900">Payment Breakdown</div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-semibold text-default-900">Payment Breakdown</span>
+                      <CurrencyToggle />
+                    </div>
                     <div class="flex items-center justify-between text-xs text-default-600">
                       <span>Session Fee</span>
-                      <span>{{ activeService?.price }}</span>
+                      <span>{{ activePriceFormatted }}</span>
                     </div>
                     <div class="flex items-center justify-between text-xs text-default-600">
                       <span>Platform &amp; Taxes</span>
@@ -380,7 +387,7 @@
                     </div>
                     <div class="pt-2 border-t border-default-200 flex items-center justify-between text-sm font-bold text-default-950">
                       <span>Total Payable</span>
-                      <span class="text-primary font-heading text-base">{{ activeService?.price }}</span>
+                      <span class="text-primary font-heading text-base">{{ activePriceFormatted }}</span>
                     </div>
 
                     <button
@@ -390,7 +397,7 @@
                       class="w-full btn-primary btn-fill py-2.5 text-xs font-semibold uppercase tracking-wider rounded-xl disabled:opacity-60 disabled:cursor-wait mt-2"
                     >
                       <Icon v-if="paying" icon="tabler:loader-2" class="size-4 animate-spin" />
-                      <span>{{ paying ? 'Processing…' : `Pay ${activeService?.price} &amp; Confirm` }}</span>
+                      <span>{{ paying ? 'Processing…' : `Pay ${activePriceFormatted} &amp; Confirm` }}</span>
                     </button>
                   </div>
 
@@ -515,6 +522,10 @@ import DateSlotPicker, { type DaySummary } from '~/components/booking/DateSlotPi
 import { serviceData, type ServiceType } from '~/data/sessions'
 import type { BookableService, BookingCustomer, ConfirmedBookingResult, SelectedSlot } from '~/types/booking'
 import { loadRazorpay, payForSession, PaymentCancelled } from '~/utils/razorpay'
+import { useCurrency } from '~/composables/useCurrency'
+import CurrencyToggle from '~/components/CurrencyToggle.vue'
+
+const { currency, getPrice } = useCurrency()
 
 const props = defineProps<{
   open: boolean
@@ -540,6 +551,10 @@ const displayedServices = computed(() => {
 
 const activeService = computed(() => {
   return (serviceData.find(s => s.id === activeServiceId.value) || serviceData[1]) as ServiceType
+})
+
+const activePriceFormatted = computed(() => {
+  return getPrice(activeService.value.id)
 })
 
 const customer = reactive<BookingCustomer>({
@@ -733,7 +748,8 @@ async function triggerPayment() {
       slotStartIso: selectedSlot.value.startIso,
       slotEndIso: selectedSlot.value.endIso,
       slotDate: selectedSlot.value.date,
-      slotLabel: selectedSlot.value.label
+      slotLabel: selectedSlot.value.label,
+      currency: currency.value
     })
 
     bookingResult.value = res

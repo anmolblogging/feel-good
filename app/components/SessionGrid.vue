@@ -37,7 +37,7 @@
                      differing copy length still line up across the row. -->
                 <div class="mt-auto pt-5">
                     <div class="flex items-baseline gap-1.5 border-t border-default-200 pt-4">
-                        <span class="h-display text-2xl leading-none">{{ service.price }}</span>
+                        <span class="h-display text-2xl leading-none">{{ getPrice(service.id) }}</span>
                         <span class="text-xs text-default-500">{{ service.priceLabel ?? '' }}</span>
                     </div>
 
@@ -88,6 +88,9 @@ import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import BookingModal from '~/components/BookingModal.vue'
 import { serviceData, type ServiceType } from '~/data/sessions'
+import { useCurrency } from '~/composables/useCurrency'
+
+const { getPrice } = useCurrency()
 
 const bookingOpen = ref(false)
 const activeService = ref<ServiceType | null>(null)

@@ -46,7 +46,9 @@
           </template>
         </div>
 
-        <div class="flex items-center justify-end gap-4">
+        <div class="flex items-center justify-end gap-3 sm:gap-4">
+          <CurrencyToggle class="hidden sm:inline-flex" />
+
           <div class="md:flex items-center hidden">
             <NuxtLink to="/contact" class="group py-2.5 px-4.5 inline-flex items-center justify-center gap-5 rounded-lg bg-primary font-medium text-primary-ink transition-all">
               <span class="relative block overflow-hidden">
@@ -106,6 +108,10 @@
                 </div>
               </div>
             </template>
+            <div class="p-3 flex items-center justify-between bg-default-100/50">
+              <span class="text-xs font-medium text-default-600">Select Currency</span>
+              <CurrencyToggle />
+            </div>
           </div>
         </div>
       </div>

@@ -75,21 +75,21 @@ const postData: PostType[] = [
     tag: 'Story',
     title: 'Technology vs. Human: Why Heartfelt Listening Still Matters in an AI Age',
     excerpt: "Chatbots can check in. But they can't feel with you. Here's why real human presence still matters, especially when you're overwhelmed.",
-    link: '/blog-details'
+    link: '/blog/technology-vs-human'
   },
   {
     image: '/images/blog/2.webp',
     tag: 'Guide',
     title: 'Overwhelmed by Career Pressure? Try This Mini Emotional Reset',
     excerpt: 'Short on time but heavy in your mind? This 30 minute check in may be all you need.',
-    link: '/blog-details'
+    link: '/blog/career-pressure-mini-reset'
   },
   {
     image: '/images/blog/5.webp',
     tag: 'Blog',
     title: 'Why Talking May Be More Healing Than Therapy for Some',
     excerpt: 'Understanding the quiet power of being truly heard, without judgment, diagnosis, or pressure.',
-    link: '/blog-details'
+    link: '/blog/why-talking-healing-than-therapy'
   }
 ]
 </script>

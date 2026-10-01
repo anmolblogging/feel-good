@@ -1,12 +1,13 @@
 <template>
   <!-- Navbar -->
-  <header class="sticky top-0 z-50 bg-body-bg transition-all duration-300">
+  <header class="sticky top-0 z-50 bg-body-bg/95 backdrop-blur-md transition-all duration-300 border-b border-default-200/50">
     <div class="container">
-      <div class="nav-sticky navbar md:py-6.5 py-5 flex items-center w-full justify-between">
-        <NuxtLink to="/" class="relative flex h-11 md:h-12.5 items-center">
-          <img src="/images/logo-fgc.png" class="h-13 md:h-15 w-auto max-w-none flex" alt="The Feel Good Centre" />
+      <div class="nav-sticky navbar md:py-6.5 py-4 flex items-center w-full justify-between">
+        <NuxtLink to="/" class="relative flex h-11 md:h-12.5 items-center" @click="closeMobileMenu">
+          <img src="/images/logo-fgc.png" class="h-12 md:h-15 w-auto max-w-none flex" alt="The Feel Good Centre" />
         </NuxtLink>
 
+        <!-- Desktop Navigation -->
         <div id="navbar" class="mx-auto hidden lg:flex items-center justify-center">
           <template v-for="(item, idx) in menuItemData" :key="idx">
             <!-- Simple link -->
@@ -47,8 +48,7 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 sm:gap-4">
-          <CurrencyToggle class="hidden sm:inline-flex" />
-
+          <!-- Book a Session CTA (desktop) -->
           <div class="md:flex items-center hidden">
             <NuxtLink to="/contact" class="group py-2.5 px-4.5 inline-flex items-center justify-center gap-5 rounded-lg bg-primary font-medium text-primary-ink transition-all">
               <span class="relative block overflow-hidden">
@@ -62,68 +62,136 @@
             </NuxtLink>
           </div>
 
+          <!-- Mobile Hamburger Toggle Button -->
           <div class="flex items-center lg:hidden">
-            <button type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="mobile-menu" data-hs-overlay="#mobile-menu" class="inline-flex size-10 items-center justify-center rounded-md bg-primary text-primary-ink font-medium transition-all">
-              <Icon icon="tabler:align-right" class="size-6"></Icon>
+            <button
+              type="button"
+              :aria-expanded="isMobileMenuOpen"
+              aria-label="Toggle navigation menu"
+              @click="toggleMobileMenu"
+              class="inline-flex size-10 items-center justify-center rounded-xl bg-primary text-primary-ink font-medium shadow-2xs transition-all duration-200 hover:opacity-90 active:scale-95 cursor-pointer"
+            >
+              <Icon :icon="isMobileMenuOpen ? 'tabler:x' : 'tabler:menu-2'" class="size-6 transition-transform duration-200"></Icon>
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="hs-overlay hs-overlay-open:translate-y-0 hs-overlay-open:opacity-100 opacity-0 hs-overlay-open:top-auto [--body-scroll:true] [--overlay-backdrop:false] fixed inset-x-0 top-0 z-40 h-100 -translate-y-full transform transition-all duration-500 lg:hidden" role="dialog" tabindex="-1" aria-labelledby="mobile-menu-label">
-      <div class="container">
-        <div class="bg-body-bg shadow border border-default-200 rounded-lg mb-4">
-          <div class="flex max-h-100 flex-col gap-1 divide-y divide-default-200 overflow-y-auto">
+    <!-- Mobile Menu Dropdown (glued directly underneath sticky header) -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 -translate-y-3"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-3"
+    >
+      <div
+        v-if="isMobileMenuOpen"
+        id="mobile-menu"
+        class="border-t border-default-200/80 bg-body-bg/98 backdrop-blur-md shadow-2xl lg:hidden max-h-[calc(100vh-80px)] overflow-y-auto"
+      >
+        <div class="container py-4 space-y-4">
+          <nav class="flex flex-col divide-y divide-default-200/60">
             <template v-for="(item, idx) in menuItemData" :key="idx">
+              <!-- Simple link -->
               <NuxtLink
                 v-if="!item.children"
                 :to="item.to!"
                 exact-active-class="active"
-                class="group flex items-center p-2.5 font-medium text-default-600 transition-all duration-300 hover:text-pink hover:decoration-current underline decoration-transparent underline-offset-3 [&.active]:text-pink [&.active]:decoration-current"
+                @click="closeMobileMenu"
+                class="flex items-center justify-between py-3.5 px-2 font-medium text-default-700 transition-colors hover:text-pink [&.active]:text-pink [&.active]:font-semibold"
               >
-                {{ item.name }}
-                <Icon icon="tabler:arrow-up-right" class="ms-1.25 flex size-4 scale-0 text-pink transition-all duration-300 group-hover:scale-100 group-[.active]:scale-100"></Icon>
+                <span>{{ item.name }}</span>
+                <Icon icon="tabler:arrow-up-right" class="size-4 text-default-400 group-hover:text-pink" />
               </NuxtLink>
 
-              <div v-else class="hs-accordion">
-                <button type="button" class="hs-accordion-toggle group flex items-center p-2.5 font-medium text-default-600 transition-all duration-300 hover:text-pink hover:decoration-current underline decoration-transparent underline-offset-3" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                  {{ item.name }}
-                  <Icon icon="tabler:chevron-down" class="transition-all hs-accordion-active:rotate-180 ms-4"></Icon>
+              <!-- Services Accordion -->
+              <div v-else class="py-1">
+                <button
+                  type="button"
+                  @click="isServicesOpen = !isServicesOpen"
+                  class="flex w-full items-center justify-between py-3.5 px-2 font-medium text-default-700 transition-colors hover:text-pink cursor-pointer"
+                  :aria-expanded="isServicesOpen"
+                >
+                  <span :class="[isServicesOpen ? 'text-pink font-semibold' : '']">{{ item.name }}</span>
+                  <Icon
+                    icon="tabler:chevron-down"
+                    :class="['size-4 text-default-400 transition-transform duration-200', isServicesOpen ? 'rotate-180 text-pink' : '']"
+                  />
                 </button>
 
-                <div class="hs-accordion-content hidden w-full overflow-hidden ps-5 pb-4 transition-[height]">
-                  <div class="space-y-1 max-h-[70vh] overflow-y-auto">
-                    <NuxtLink
-                      v-for="(subItem, subIdx) in item.children"
-                      :key="subIdx"
-                      :to="subItem.to!"
-                      exact-active-class="active"
-                      class="block rounded-sm px-3 py-2 text-sm font-semibold text-default-600 hover:bg-primary/6 hover:text-pink [&.active]:bg-primary/6 [&.active]:text-pink"
-                    >
-                      {{ subItem.name }}
-                    </NuxtLink>
-                  </div>
+                <div
+                  v-show="isServicesOpen"
+                  class="space-y-1 ps-3 pe-1 py-1.5 mb-2 bg-default-100/70 rounded-xl border border-default-200/50"
+                >
+                  <NuxtLink
+                    v-for="(subItem, subIdx) in item.children"
+                    :key="subIdx"
+                    :to="subItem.to!"
+                    exact-active-class="active"
+                    @click="closeMobileMenu"
+                    class="block rounded-lg px-3 py-2 text-xs font-medium text-default-600 transition-colors hover:bg-primary/10 hover:text-pink [&.active]:bg-primary/15 [&.active]:text-pink [&.active]:font-semibold"
+                  >
+                    {{ subItem.name }}
+                  </NuxtLink>
                 </div>
               </div>
             </template>
-            <div class="p-3 flex items-center justify-between bg-default-100/50">
-              <span class="text-xs font-medium text-default-600">Select Currency</span>
-              <CurrencyToggle />
+          </nav>
+
+          <!-- Currency Selector Card inside Mobile Menu -->
+          <div class="p-3.5 rounded-2xl bg-white border border-default-200/80 shadow-xs flex items-center justify-between gap-3">
+            <div>
+              <div class="text-xs font-semibold text-default-900">Currency</div>
+              <div class="text-[0.68rem] text-default-500">Show prices in INR or USD</div>
             </div>
+            <CurrencyToggle />
+          </div>
+
+          <!-- Book a Session CTA inside Mobile Menu -->
+          <div class="pt-1">
+            <NuxtLink
+              to="/contact"
+              @click="closeMobileMenu"
+              class="w-full py-3 px-5 inline-flex items-center justify-center gap-2 rounded-xl bg-primary font-medium text-primary-ink shadow-sm transition-all hover:opacity-95"
+            >
+              <span>Book a Session</span>
+              <Icon icon="tabler:arrow-right" class="size-4" />
+            </NuxtLink>
           </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </header>
+
+  <!-- Backdrop -->
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition-opacity duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity duration-200"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="isMobileMenuOpen"
+        class="fixed inset-0 bg-default-950/30 backdrop-blur-2xs z-40 lg:hidden"
+        @click="closeMobileMenu"
+        aria-hidden="true"
+      />
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Icon } from '@iconify/vue'
 import { NuxtLink } from '#components'
 import { useRoute } from '#app'
-import { watch } from 'vue'
+import CurrencyToggle from '~/components/CurrencyToggle.vue'
 
 type MenuItemType = {
   name: string
@@ -152,11 +220,50 @@ const menuItemData: MenuItemType[] = [
   { name: 'Contact', to: '/contact' }
 ]
 
-const route = useRoute()
+const isMobileMenuOpen = ref(false)
+const isServicesOpen = ref(false)
 
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
+  isServicesOpen.value = false
+}
+
+// Close on route navigation
+const route = useRoute()
 watch(() => route.fullPath, () => {
-  if (typeof window !== 'undefined' && window.HSOverlay) {
-    window.HSOverlay.close('#mobile-menu')
+  closeMobileMenu()
+})
+
+// Lock background scroll when mobile menu is open
+watch(isMobileMenuOpen, (open) => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+})
+
+// Close on ESC key
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape' && isMobileMenuOpen.value) {
+    closeMobileMenu()
+  }
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeyDown)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeyDown)
+  }
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
   }
 })
 </script>
